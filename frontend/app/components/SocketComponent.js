@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import io from "socket.io-client";
 
 const SOCKET_SERVER_URL =
-  process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || "http://localhost:5000";
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  process.env.NEXT_PUBLIC_SOCKET_SERVER_URL ||
+  "https://be-my-force.onrender.com";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://be-my-force.onrender.com";
 
 export default function SocketComponent() {
   const [message, setMessage] = useState("");
