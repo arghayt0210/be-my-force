@@ -1,46 +1,41 @@
+// server.js
 require("dotenv").config();
 const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-const mongoose = require("mongoose");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const passport = require("./config/passport");
+const authRoutes = require("./routes/auth");
+const testRoutes = require("./routes/test");
+const initializeSocket = require("./config/socket");
+const http = require("http");
+const initializeDatabase = require("./config/database");
 
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: process.env.FRONTEND_URL || "https://be-myforce.onrender.com",
-    methods: ["GET", "POST"],
-  },
-});
+const server = http.createServer(app); // Create HTTP server
+initializeDatabase();
+const io = initializeSocket(server); // Initialize socket.io
 
 // Middleware
-app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
 
-// MongoDB Connection
-mongoose
-  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/yourdb")
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log("MongoDB Connection Error:", err));
+// Initialize passport
+app.use(passport.initialize());
 
-// Test API Route
-app.get("/api/test", (req, res) => {
-  res.json({ message: "Backend is working!" });
-});
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api", testRoutes);
 
-// Socket.IO Connection
-io.on("connection", (socket) => {
-  console.log("A user connected");
-
-  socket.on("message", (data) => {
-    console.log("Message received:", data);
-    io.emit("message", data);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected");
-  });
+// Error handling
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Something went wrong!" });
 });
 
 const PORT = process.env.PORT || 5000;
