@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema(
     profile_image: {
       type: String,
     },
+    profile_image_asset: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Asset",
+    },
     user_type: {
       type: String,
       enum: ["user", "admin"],

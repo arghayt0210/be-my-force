@@ -1,5 +1,6 @@
 import SocketComponent from "@/components/SocketComponent";
 import Logo from "@/components/Logo";
+import LogoutButton from "@/components/LogoutButton";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
         Next.js + Socket.IO + Express Test
       </h1>
       <Logo height={40} width={40} />
+      <LogoutButton />
       <SocketComponent />
     </main>
   );

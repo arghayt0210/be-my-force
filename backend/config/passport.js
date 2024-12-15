@@ -3,6 +3,7 @@ const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const { uploadSingleFile } = require("../utils/cloudinary");
 
 // We don't need serializeUser and deserializeUser since we're not using sessions
 passport.use(
@@ -15,20 +16,35 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        console.log("18-profile", profile);
         let user = await User.findOne({ googleId: profile.id });
 
+        // Upload profile image to Cloudinary
+        const profileImageUrl = profile.photos[0].value;
+
+        // Create temporary user if it doesn't exist (for asset creation)
         if (!user) {
           user = await User.create({
             googleId: profile.id,
             full_name: profile.displayName,
             email: profile.emails[0].value,
-            profile_image: profile.photos[0].value,
             username: profile.emails[0].value.split("@")[0],
             isEmailVerified: true,
             lastLogin: new Date(),
           });
-        } else {
+        }
+
+        // Upload profile image and create asset
+        const uploadResult = await uploadSingleFile({
+          file: profileImageUrl,
+          relatedModel: "User",
+          subfolder: "profile",
+          userId: user._id,
+          relatedId: user._id,
+        });
+
+        if (uploadResult) {
+          user.profile_image = uploadResult.cloudinary.secure_url;
+          user.profile_image_asset = uploadResult.asset._id; // Store the Asset ID
           user.lastLogin = new Date();
           await user.save();
         }
