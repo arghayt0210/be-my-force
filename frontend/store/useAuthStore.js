@@ -28,7 +28,9 @@ const useAuthStore = create((set) => ({
 
   logout: async () => {
     try {
-      await axiosJSON.get("/api/auth/logout");
+      await axiosJSON.get("/api/auth/logout", {
+        withCredentials: true,
+      });
       set({
         user: null,
         isAuthenticated: false,
