@@ -13,8 +13,6 @@ const initializeDatabase = require("./config/database");
 
 const app = express();
 const server = http.createServer(app); // Create HTTP server
-initializeDatabase();
-const io = initializeSocket(server); // Initialize socket.io
 
 // Middleware
 app.use(express.json());
@@ -25,6 +23,9 @@ app.use(
     credentials: true,
   })
 );
+
+initializeDatabase();
+const io = initializeSocket(server); // Initialize socket.io
 
 // Initialize passport
 app.use(passport.initialize());
