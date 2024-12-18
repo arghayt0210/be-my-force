@@ -4,16 +4,22 @@ const jwt = require("jsonwebtoken");
 const { sendOTPEmail, sendPasswordResetEmail } = require("../utils/email");
 const crypto = require("crypto");
 
+const setCookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "lax",
+  maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  domain:
+    process.env.NODE_ENV === "production"
+      ? ".onrender.com" // Allow subdomains on production
+      : "localhost", // Use localhost for development
+};
+
 const googleCallback = (req, res) => {
   try {
     // Set JWT token in cookie
     console.log("10", process.env.NODE_ENV === "production");
-    res.cookie("token", req.user.token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    });
+    res.cookie("token", req.user.token, setCookieOptions);
 
     // Redirect to frontend
     // res.redirect(`${process.env.FRONTEND_URL}/onboarding`);
@@ -65,12 +71,7 @@ const register = async (req, res) => {
     });
 
     // Set HTTP-only cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    });
+    res.cookie("token", token, setCookieOptions);
 
     // Return success without sending the password
     const userWithoutPassword = user.toObject();
@@ -135,12 +136,7 @@ const login = async (req, res) => {
     await user.save();
 
     // Set HTTP-only cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    });
+    res.cookie("token", token, setCookieOptions);
 
     // Return user data without sensitive fields
     const userWithoutSensitive = user.toObject();
@@ -349,11 +345,7 @@ const resetPassword = async (req, res) => {
 };
 
 const logout = (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-  });
+  res.clearCookie("token", setCookieOptions);
   res.json({ message: "Logged out successfully" });
 };
 
