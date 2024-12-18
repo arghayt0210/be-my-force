@@ -11,14 +11,15 @@ const googleCallback = (req, res) => {
     res.cookie("token", req.user.token, {
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     });
 
     // Redirect to frontend
-    res.redirect(`${process.env.FRONTEND_URL}/onboarding`);
+    // res.redirect(`${process.env.FRONTEND_URL}/onboarding`);
+    res.json({ message: "Google callback successful" });
   } catch (error) {
-    res.redirect(`${process.env.FRONTEND_URL}/login?error=true`);
+    res.json({ message: "Google callback failed" });
   }
 };
 
@@ -67,7 +68,7 @@ const register = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     });
 
@@ -137,7 +138,7 @@ const login = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     });
 
@@ -351,7 +352,7 @@ const logout = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
     secure: true,
-    sameSite: "lax",
+    sameSite: "strict",
   });
   res.json({ message: "Logged out successfully" });
 };
