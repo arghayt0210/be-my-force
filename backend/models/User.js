@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
   {
@@ -34,6 +35,15 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Asset",
     },
+    bio: {
+      type: String,
+      maxLength: 2000,
+    },
+
+    isOnboarded: {
+      type: Boolean,
+      default: false,
+    },
     user_type: {
       type: String,
       enum: ["user", "admin"],
@@ -54,8 +64,6 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    emailVerificationToken: String,
-    emailVerificationExpires: Date,
 
     // Password reset fields
     resetPasswordToken: String,
@@ -117,6 +125,10 @@ userSchema.methods.generatePasswordResetToken = function () {
     .digest("hex");
   this.resetPasswordExpires = Date.now() + 30 * 60 * 1000; // Token expires in 30 minutes
   return resetToken;
+};
+
+userSchema.methods.isGoogleUser = function () {
+  return Boolean(this.googleId);
 };
 
 const User = mongoose.model("User", userSchema);
