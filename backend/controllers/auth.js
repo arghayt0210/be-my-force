@@ -10,7 +10,7 @@ const googleCallback = (req, res) => {
     console.log("10", process.env.NODE_ENV === "production");
     res.cookie("token", req.user.token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     });
@@ -66,7 +66,7 @@ const register = async (req, res) => {
     // Set HTTP-only cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     });
@@ -136,7 +136,7 @@ const login = async (req, res) => {
     // Set HTTP-only cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     });
@@ -350,7 +350,7 @@ const resetPassword = async (req, res) => {
 const logout = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
     sameSite: "lax",
   });
   res.json({ message: "Logged out successfully" });
