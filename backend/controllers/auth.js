@@ -10,7 +10,7 @@ const googleCallback = (req, res) => {
     res.cookie("token", req.user.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     });
 
@@ -350,7 +350,7 @@ const logout = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "strict",
   });
   res.json({ message: "Logged out successfully" });
 };
